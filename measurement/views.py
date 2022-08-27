@@ -3,7 +3,7 @@
 
 from rest_framework.response import Response
 from .models import Sensor, Measurement
-from .serializers import SensorSerializer, MeasurementSerializer
+from .serializers import SensorsSerializer, MeasurementSerializer, AdvSensorsSerializer
 from rest_framework.views import APIView
 from django.forms import model_to_dict
 from rest_framework.generics import RetrieveAPIView
@@ -12,7 +12,7 @@ from rest_framework.generics import RetrieveAPIView
 class AllSensorsView(APIView):
     def get(self, request):
         sens = Sensor.objects.all()
-        ser = SensorSerializer(sens, many=True)
+        ser = SensorsSerializer(sens, many=True)
         return Response(ser.data)
 
     def post(self, request):
@@ -22,14 +22,14 @@ class AllSensorsView(APIView):
 
 class SensorView(RetrieveAPIView):
     queryset = Sensor.objects.all()
-    serializer_class = SensorSerializer()
+    serializer_class = AdvSensorsSerializer
 
     def get_pk(self, pk):
         return Sensor.objects.get(pk=pk)
 
     def patch(self, request, pk):
         gpk = self.get_pk(pk)
-        ser = SensorSerializer(gpk, data=request.data, partial=True)
+        ser = SensorsSerializer(gpk, data=request.data, partial=True)
         if ser.is_valid():
             ser.save()
             return Response({'data': 'update'})
